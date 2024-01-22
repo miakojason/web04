@@ -1,4 +1,4 @@
-<?php include_once "./api/db.php"?>
+<?php include_once './api/db.php'; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- saved from url=(0039) -->
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -26,8 +26,8 @@
                                 <a href="?do=login">會員登入</a> |
                                 <a href="?do=admin">管理登入</a>
                         </div>
-                        <marquee behavior="" direction="">
-                        年終特賣會開跑了 &nbsp; 情人節特惠活動 &nbsp; 
+                        <marquee>
+                                年終特賣會開跑了 &nbsp; 情人節特惠活動 &nbsp;
                         </marquee>
                 </div>
                 <div id="left" class="ct">
@@ -41,17 +41,17 @@
                 </div>
                 <div id="right">
                         <?php
-                        $do=$_GET['do']??'main';
-                        $file="./front/{$do}.php";
-                        if(file_exists($file)){
-                                include "$file";
-                        }else{
+                        $do = $_GET['do'] ?? 'main';
+                        $file = "./front/{$do}.php";
+                        if (file_exists($file)) {
+                                include $file;
+                        } else {
                                 include "./front/main.php";
                         }
                         ?>
                 </div>
-                <div id="bottom" style="line-height:70px;background:url(../icon/bot.png); color:#FFF;" class="ct">
-                        <?=$Bottom->find(1)['bottom'];?> </div>
+                <div id="bottom" style="line-height:70px;background:url(icon/bot.png); color:#FFF;" class="ct">
+                        <?= $Bottom->find(1)['bottom']; ?></div>
         </div>
         <script src="./js/jquery-3.4.1.min.js"></script>
 </body>
