@@ -39,7 +39,7 @@
                                         00005 </div>
                         </span>
                 </div>
-                <div id="right">
+                <div id="right">    
                         <?php
                         $do=$_GET['do']??'main';
                         $file="./front/{$do}.php";
