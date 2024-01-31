@@ -9,7 +9,7 @@
     <input type="text" name="mid" id="mid">
     <button onclick="addType('mid')">新增</button>
 </div>
-<!-- table.all>(tr.tt>td+td.ct>button*2)+(tr.pp.ct>td*2) -->
+<!-- table.all>(tr.tt>td+td.ct>button*2)+(tr.tt.ct>td*2) -->
 <table class="all">
     <?php
     $bigs = $Type->all(['big_id' => 0]);
@@ -37,18 +37,11 @@
         }
     }
     ?>
+
 </table>
 <script>
     getTypes(0)
-function edit(dom,id){
-    let name=prompt("請輸入你要修改的分類名稱:",`${$(dom).parent().prev().text()}`)
-    if(name!=null){
-        $.post("./api/save_type.php",{name,id},()=>{
-            $(dom).parent().prev().text(name);
-            location.reload();
-        })
-    }
-}
+
     function getTypes(big_id) {
         $.get("./api/get_types.php", {
             big_id
@@ -58,8 +51,9 @@ function edit(dom,id){
     }
 
     function addType(type) {
-        let name;
+        let name
         let big_id;
+
         switch (type) {
             case 'big':
                 name = $("#big").val();
@@ -70,6 +64,7 @@ function edit(dom,id){
                 big_id = $("#bigs").val();
                 break;
         }
+
         $.post("./api/save_type.php", {
             name,
             big_id
@@ -78,6 +73,8 @@ function edit(dom,id){
         })
     }
 </script>
+
+
 <h2 class="ct">商品管理</h2>
 <div class="ct"><button>新增商品</button></div>
 <table class="all">
