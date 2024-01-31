@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-01-31 07:16:20
+-- 產生時間： 2024-01-31 09:21:49
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -65,6 +65,33 @@ INSERT INTO `bottom` (`id`, `bottom`) VALUES
 -- --------------------------------------------------------
 
 --
+-- 資料表結構 `goods`
+--
+
+CREATE TABLE `goods` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `no` text NOT NULL,
+  `name` text NOT NULL,
+  `price` int(10) NOT NULL,
+  `spec` text NOT NULL,
+  `stock` int(10) NOT NULL,
+  `img` text NOT NULL,
+  `intro` text NOT NULL,
+  `big` int(10) NOT NULL,
+  `mid` int(10) NOT NULL,
+  `sh` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- 傾印資料表的資料 `goods`
+--
+
+INSERT INTO `goods` (`id`, `no`, `name`, `price`, `spec`, `stock`, `img`, `intro`, `big`, `mid`, `sh`) VALUES
+(2, '292346', '兩用式磁扣腰包', 685, '中型', 18, '0404.jpg', '商品詳細介紹:\r\n材質:進口牛皮\r\n顏色:黑色荔枝紋+黑色珠光面皮(黑色縫線)\r\n尺寸:15cm*14cm(高)*6cm(前後)\r\n產地:臺灣\r\n', 1, 13, 1);
+
+-- --------------------------------------------------------
+
+--
 -- 資料表結構 `mem`
 --
 
@@ -117,7 +144,7 @@ INSERT INTO `type` (`id`, `name`, `big_id`) VALUES
 (17, '時尚手錶', 3),
 (18, '時尚珠寶', 3),
 (19, '背包', 4),
-(23, '電腦3c', 0),
+(23, '電腦3c1', 0),
 (24, 'cpu', 23),
 (26, 'gpu', 23);
 
@@ -135,6 +162,12 @@ ALTER TABLE `admin`
 -- 資料表索引 `bottom`
 --
 ALTER TABLE `bottom`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- 資料表索引 `goods`
+--
+ALTER TABLE `goods`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -164,6 +197,12 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `bottom`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `goods`
+--
+ALTER TABLE `goods`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `mem`
