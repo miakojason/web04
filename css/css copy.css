@@ -22,8 +22,7 @@ body
 	display:inline-block;
 	width:20%;
 	padding:2%;
-	height:550px;
-	overflow: auto;
+	min-height:550px;
 	vertical-align:top;
 	border:#000 1px solid;
 }
@@ -105,7 +104,7 @@ input[type=text],input[type=password]
 	display:none;
 }
 #left .s a{
-	background-color: lightblue;
+	background-color:lightgreen;
 }
 div.ww:hover > div.s
 {

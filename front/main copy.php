@@ -1,8 +1,7 @@
 <?php
 $type = $_GET['type'] ?? 0;
 $nav = '';
-$goods = '';
-// $goods = null;
+$goods = null;
 if ($type == 0) {
     $nav = "全部商品";
     $goods = $Goods->all(['sh' => 1]);
@@ -17,15 +16,17 @@ if ($type == 0) {
         $goods = $Goods->all(['sh' => 1, 'mid' => $t['id']]);
     }
 }
+
 ?>
 <h2><?= $nav; ?></h2>
 <style>
     .item {
         width: 80%;
         height: 160px;
-        /* background-color: #f4c591; */
+        background-color: #f4c591;
         margin: 5px auto;
         display: flex;
+
     }
 
     .item .img {
@@ -33,7 +34,7 @@ if ($type == 0) {
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 1px solid white;
+        border: 1px solid #999;
     }
 
     .item .info {
@@ -43,30 +44,31 @@ if ($type == 0) {
     }
 
     .info div {
-        border: 1px solid white;
+        border: 1px solid #999;
         border-left: 0px;
         border-top: 0px;
         flex-grow: 1;
     }
 
     .info div:nth-child(1) {
-        border-top: 1px solid white;
+        border-top: 1px solid #999;
     }
 </style>
 <?php
 foreach ($goods as $good) {
 ?>
-    <div class="item pp">
+    <div class='item'>
         <div class="img">
             <img src="./img/<?= $good['img']; ?>" style="width:80%;height:110px">
         </div>
         <div class="info">
-            <div class="ct tt"><?= $good['name']; ?></div>
-            <div>價錢:<?= $good['price']; ?></div>
-            <div>規格:<?= $good['spec']; ?></div>
-            <div>簡介:<?= mb_substr($good['intro'], 0, 25); ?>...</div>
+            <div class='ct tt'><?= $good['name']; ?></div>
+            <div>價錢：<?= $good['price']; ?></div>
+            <div>規格：<?= $good['spec']; ?></div>
+            <div>簡介：<?= mb_substr($good['intro'], 0, 25); ?>...</div>
         </div>
     </div>
+
 <?php
 }
 ?>
