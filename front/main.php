@@ -1,8 +1,8 @@
 <?php
 $type = $_GET['type'] ?? 0;
 $nav = '';
-// $goods = '';
-$goods = null;
+$goods = '';
+// $goods = null;
 if ($type == 0) {
     $nav = "全部商品";
     $goods = $Goods->all(['sh' => 1]);

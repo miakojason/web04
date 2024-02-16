@@ -53,6 +53,13 @@ $goods = $Goods->find($_GET['id']);
 </div>
 <div class="tt ct" style="width: 80%;margin:auto">
     購買數量:
-    <input type="number" name="" value="1" style="width:50px">
-    <img src="./icon/0402.jpg" alt="">
+    <input type="number" id="qt" value="1" style="width:50px;">
+    <img src="./icon/0402.jpg" onclick="buy()">
 </div>
+<script>
+    function buy() {
+        let id = <?= $_GET['id']; ?>;
+        let qt = $("#qt").val()
+        location.href = `?do=buycart&id=${id}&qt=${qt}`
+    }
+</script>
