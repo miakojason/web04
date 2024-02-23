@@ -1,73 +1,119 @@
-<?php
+<?php 
 date_default_timezone_set("Asia/Taipei");
 session_start();
-class DB
-{
-    protected $dsn = "mysql:host=localhost;charset=utf8;dbname=db04";
+class DB{
+
+    protected $dsn = "mysql:host=localhost;charset=utf8;dbname=db03";
     protected $pdo;
     protected $table;
+    
     public function __construct($table)
     {
-        $this->table = $table;
-        $this->pdo = new PDO($this->dsn, 'root', '');
+        $this->table=$table;
+        //$this->pdo=new PDO($this->dsn,'s1120401','s1120401');
+        $this->pdo=new PDO($this->dsn,'root','');
     }
-    private function a2s($array)
+
+
+    function all( $where = '', $other = '')
     {
+        $sql = "select * from `$this->table` ";
+        $sql =$this->sql_all($sql,$where,$other);
+        return  $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    function count( $where = '', $other = ''){
+        $sql = "select count(*) from `$this->table` ";
+        $sql=$this->sql_all($sql,$where,$other);
+        return  $this->pdo->query($sql)->fetchColumn(); 
+    }
+    private function math($math,$col,$array='',$other=''){
+        $sql="select $math(`$col`)  from `$this->table` ";
+        $sql=$this->sql_all($sql,$array,$other);
+        return $this->pdo->query($sql)->fetchColumn();
+    }
+    function sum($col='', $where = '', $other = ''){
+        return  $this->math('sum',$col,$where,$other);
+    }
+    function max($col, $where = '', $other = ''){
+        return  $this->math('max',$col,$where,$other);
+    }  
+    function min($col, $where = '', $other = ''){
+        return  $this->math('min',$col,$where,$other);
+    }  
+    
+    function find($id)
+    {
+        $sql = "select * from `$this->table` ";
+    
+        if (is_array($id)) {
+            $tmp = $this->a2s($id);
+            $sql .= " where " . join(" && ", $tmp);
+        } else if (is_numeric($id)) {
+            $sql .= " where `id`='$id'";
+        } 
+        //echo 'find=>'.$sql;
+        $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+        return $row;
+    }
+    
+    function save($array){
+        if(isset($array['id'])){
+            $sql = "update `$this->table` set ";
+    
+            if (!empty($array)) {
+                $tmp = $this->a2s($array);
+            } 
+        
+            $sql .= join(",", $tmp);
+            $sql .= " where `id`='{$array['id']}'";
+        }else{
+            $sql = "insert into `$this->table` ";
+            $cols = "(`" . join("`,`", array_keys($array)) . "`)";
+            $vals = "('" . join("','", $array) . "')";
+        
+            $sql = $sql . $cols . " values " . $vals;
+        }
+
+        return $this->pdo->exec($sql);
+    }
+
+    function del($id)
+    {
+        $sql = "delete from `$this->table` where ";
+    
+        if (is_array($id)) {
+            $tmp = $this->a2s($id);
+            $sql .= join(" && ", $tmp);
+        } else if (is_numeric($id)) {
+            $sql .= " `id`='$id'";
+        } 
+        //echo $sql;
+    
+        return $this->pdo->exec($sql);
+    }
+    
+    /**
+     * 可輸入各式SQL語法字串並直接執行
+     */
+    function q($sql){
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
+    private function a2s($array){
         foreach ($array as $col => $value) {
             $tmp[] = "`$col`='$value'";
         }
         return $tmp;
     }
-    function save($array)
-    {
-        if (isset($array['id'])) {
-            $sql = "update `$this->table` set ";
-            if (!empty($array)) {
-                $tmp = $this->a2s($array);
-            } else {
-                echo "錯誤:缺少要編輯的欄位陣列";
-            }
-            $sql .= join(",", $tmp);
-            $sql .= " where `id` = '{$array['id']}'";
-        } else {
-            $sql = "insert into `$this->table`";
-            $cols = "(`" . join("`,`", array_keys($array)) . "`)";
-            $vals = "('" . join("','", $array) . "')";
-            $sql .= $cols . "values" . $vals;
-        }
-        return $this->pdo->exec($sql);
-    }
-    function del($id)
-    {
-        $sql = "delete from `$this->table` where ";
-        if (is_array($id)) {
-            $tmp = $this->a2s($id);
-            $sql .= join(" && ", $tmp);
-        } else if (is_numeric($id)) {
-            $sql .= "`id`='$id'";
-        } else {
-            echo "錯誤:參數資料型態必須是數字或陣列";
-        }
-        return $this->pdo->exec($sql);
-    }
-    function find($id)
-    {
-        $sql = "select * from `$this->table` where ";
-        if (is_array($id)) {
-            $tmp = $this->a2s($id);
-            $sql .= join(" && ", $tmp);
-        } else if (is_numeric($id)) {
-            $sql .= "`id`='$id'";
-        } else {
-            echo "錯誤:參數的資料型態必須是數字或陣列";
-        }
-        $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-        return $row;
-    }
-    private function sql_all($sql, $array, $other)
-    {
+
+    private function sql_all($sql,$array,$other){
+
         if (isset($this->table) && !empty($this->table)) {
+    
             if (is_array($array)) {
+    
                 if (!empty($array)) {
                     $tmp = $this->a2s($array);
                     $sql .= " where " . join(" && ", $tmp);
@@ -75,54 +121,23 @@ class DB
             } else {
                 $sql .= " $array";
             }
-            return $sql .= $other;
-        } else {
-            echo "錯誤:沒有指定的資料表名稱";
-        }
+    
+            $sql .= $other;
+            // echo 'all=>'.$sql;
+            // $rows = $this->pdo->query($sql)->fetchColumn();
+            return $sql;
+        } 
     }
-    function q($sql)
-    {
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    function all($where = '', $other = '')
-    {
-        $sql = "select * from `$this->table`";
-        $sql = $this->sql_all($sql, $where, $other);
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    function count($where = '', $other = '')
-    {
-        $sql = "select count(*) from `$this->table`";
-        $sql = $this->sql_all($sql, $where, $other);
-        return $this->pdo->query($sql)->fetchColumn();
-    }
-    private function math($math, $col, $array = '', $other = '')
-    {
-        $sql = "select $math(`$col`) from `$this->table`";
-        $sql = $this->sql_all($sql, $array, $other);
-        return $this->pdo->query($sql)->fetchColumn();
-    }
-    function sum($col = '', $where = '', $other = '')
-    {
-        return $this->math('sum', $col, $where, $other);
-    }
-    function max($col = '', $where = '', $other = '')
-    {
-        return $this->math('max', $col, $where, $other);
-    }
-    function min($col = '', $where = '', $other = '')
-    {
-        return $this->math('min', $col, $where, $other);
-    }
+
 }
+
 function dd($array)
 {
     echo "<pre>";
     print_r($array);
     echo "</pre>";
 }
-function to($url)
-{
+function to($url){
     header("location:$url");
 }
 
@@ -187,7 +202,6 @@ function captcha($str){
 
         //使用imagettfbbox()來取得單一字元在大小,角度和字型的影響下，字元圖形的四個角的坐標資訊陣列
         $tmp=imagettfbbox($fontsize,$text_info[$char]['angle'],realpath('../fonts/arial.ttf'),$char);
-        // $tmp=imagettfbbox($fontsize,$text_info[$char]['angle'],realpath('./fonts/arial.ttf'),$char);
 
         //利用字元的資訊，使用x坐標的最大值減最小值來計算出字元寬度，使用y坐標的最大值-最小值來計出字元高度
         //因坐標特性，需要加上1才能得到正確的寬度及高度
@@ -243,7 +257,6 @@ function captcha($str){
             ];
 
     //填入底色        
-    // imagefill($dst_img,0,0,$colors[rand(0,10)]);
     imagefill($dst_img,0,0,$white);
     
     //建立一個開始繪製文字圖形的起始坐標，由邊框的厚度開始繪製
@@ -257,7 +270,6 @@ function captcha($str){
 
         //將字元依照大小，角度，坐標，顏色，字型等資訊畫在畫布上
         imagettftext($dst_img,$fontsize,$info['angle'],$x_pointer,$y,$colors[rand(0,count($colors)-1)],realpath('../fonts/arial.ttf'),$char);
-        // imagettftext($dst_img,$fontsize,$info['angle'],$x_pointer,$y,$colors[rand(0,count($colors)-1)],realpath('./fonts/arial.ttf'),$char);
 
         //依照字元的寬度及字元的x坐標來產生下一個字元的x坐標起點
         $x_pointer=$x_pointer+$info['width']+$info['x']+1;
@@ -304,11 +316,11 @@ function captcha($str){
 
 }
 
-
-$Bottom = new DB('bottom');
+$Bottom=new DB('bottom');
 $Mem=new DB('mem');
 $Admin=new DB('admin');
 $Type=new DB('type');
 $Goods=new DB('goods');
 $Order=new DB('orders');
+
 ?>

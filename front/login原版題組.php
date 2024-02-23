@@ -15,17 +15,13 @@
     <tr>
         <td class="tt">驗證碼</td>
         <td class="pp">
-        <?php
-            // $_SESSION['ans'] = code(5);
-            // $img=captcha($_SESSION['ans']);
-            // $a = rand(10, 99);
-            // $b = rand(10, 99);
-            // $_SESSION['ans'] = $a + $b;
-            // echo $a . " + " . $b . " =";
+            <?php
+            $a = rand(10, 99);
+            $b = rand(10, 99);
+            $_SESSION['ans'] = $a + $b;
+            echo $a . " + " . $b . " =";
             ?>
             <input type="text" name="ans" id="ans">
-            <!-- <img src="<?=$img;?>" id=""> -->
-            <img src="" id="captcha"><button onclick="captcha()">重新產生</button>
         </td>
     </tr>
 </table>
@@ -33,14 +29,6 @@
     <button onclick="login('mem')">確認</button>
 </div>
 <script>
-     captcha();
-     
-    function captcha(){
-        $.get("./api/captcha.php",(img)=>{
-            console.log("img",img);
-            $("#captcha").attr("src",img)
-        })
-    }
     function login(table) {
         $.get('./api/chk_ans.php', {
             ans: $("#ans").val()

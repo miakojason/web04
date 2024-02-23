@@ -1,131 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖形驗證碼</title>
+</head>
+<body>
 <?php
-date_default_timezone_set("Asia/Taipei");
-session_start();
-class DB
-{
-    protected $dsn = "mysql:host=localhost;charset=utf8;dbname=db04";
-    protected $pdo;
-    protected $table;
-    public function __construct($table)
-    {
-        $this->table = $table;
-        $this->pdo = new PDO($this->dsn, 'root', '');
-    }
-    private function a2s($array)
-    {
-        foreach ($array as $col => $value) {
-            $tmp[] = "`$col`='$value'";
-        }
-        return $tmp;
-    }
-    function save($array)
-    {
-        if (isset($array['id'])) {
-            $sql = "update `$this->table` set ";
-            if (!empty($array)) {
-                $tmp = $this->a2s($array);
-            } else {
-                echo "錯誤:缺少要編輯的欄位陣列";
-            }
-            $sql .= join(",", $tmp);
-            $sql .= " where `id` = '{$array['id']}'";
-        } else {
-            $sql = "insert into `$this->table`";
-            $cols = "(`" . join("`,`", array_keys($array)) . "`)";
-            $vals = "('" . join("','", $array) . "')";
-            $sql .= $cols . "values" . $vals;
-        }
-        return $this->pdo->exec($sql);
-    }
-    function del($id)
-    {
-        $sql = "delete from `$this->table` where ";
-        if (is_array($id)) {
-            $tmp = $this->a2s($id);
-            $sql .= join(" && ", $tmp);
-        } else if (is_numeric($id)) {
-            $sql .= "`id`='$id'";
-        } else {
-            echo "錯誤:參數資料型態必須是數字或陣列";
-        }
-        return $this->pdo->exec($sql);
-    }
-    function find($id)
-    {
-        $sql = "select * from `$this->table` where ";
-        if (is_array($id)) {
-            $tmp = $this->a2s($id);
-            $sql .= join(" && ", $tmp);
-        } else if (is_numeric($id)) {
-            $sql .= "`id`='$id'";
-        } else {
-            echo "錯誤:參數的資料型態必須是數字或陣列";
-        }
-        $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-        return $row;
-    }
-    private function sql_all($sql, $array, $other)
-    {
-        if (isset($this->table) && !empty($this->table)) {
-            if (is_array($array)) {
-                if (!empty($array)) {
-                    $tmp = $this->a2s($array);
-                    $sql .= " where " . join(" && ", $tmp);
-                }
-            } else {
-                $sql .= " $array";
-            }
-            return $sql .= $other;
-        } else {
-            echo "錯誤:沒有指定的資料表名稱";
-        }
-    }
-    function q($sql)
-    {
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    function all($where = '', $other = '')
-    {
-        $sql = "select * from `$this->table`";
-        $sql = $this->sql_all($sql, $where, $other);
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    function count($where = '', $other = '')
-    {
-        $sql = "select count(*) from `$this->table`";
-        $sql = $this->sql_all($sql, $where, $other);
-        return $this->pdo->query($sql)->fetchColumn();
-    }
-    private function math($math, $col, $array = '', $other = '')
-    {
-        $sql = "select $math(`$col`) from `$this->table`";
-        $sql = $this->sql_all($sql, $array, $other);
-        return $this->pdo->query($sql)->fetchColumn();
-    }
-    function sum($col = '', $where = '', $other = '')
-    {
-        return $this->math('sum', $col, $where, $other);
-    }
-    function max($col = '', $where = '', $other = '')
-    {
-        return $this->math('max', $col, $where, $other);
-    }
-    function min($col = '', $where = '', $other = '')
-    {
-        return $this->math('min', $col, $where, $other);
-    }
-}
-function dd($array)
-{
-    echo "<pre>";
-    print_r($array);
-    echo "</pre>";
-}
-function to($url)
-{
-    header("location:$url");
-}
+/**
+ * 設計兩個function用來產生驗證碼和圖形
+ * 驗證碼的部份可以指定長度也可以由函式亂數決定
+ * 回傳值 :string
+ */
 
+ echo code(8);
 function code(...$length){
   
     //使用亂數來產生驗證碼長度，判斷是否帶有參數來決定長度變數的產生方式
@@ -186,8 +75,7 @@ function captcha($str){
         $text_info[$char]['angle']=rand(-25,25);
 
         //使用imagettfbbox()來取得單一字元在大小,角度和字型的影響下，字元圖形的四個角的坐標資訊陣列
-        $tmp=imagettfbbox($fontsize,$text_info[$char]['angle'],realpath('../fonts/arial.ttf'),$char);
-        // $tmp=imagettfbbox($fontsize,$text_info[$char]['angle'],realpath('./fonts/arial.ttf'),$char);
+        $tmp=imagettfbbox($fontsize,$text_info[$char]['angle'],realpath('./fonts/arial.ttf'),$char);
 
         //利用字元的資訊，使用x坐標的最大值減最小值來計算出字元寬度，使用y坐標的最大值-最小值來計出字元高度
         //因坐標特性，需要加上1才能得到正確的寬度及高度
@@ -206,7 +94,7 @@ function captcha($str){
     }
     
     //建立一個邊框的厚度變數
-    $border=10;
+    $border=15;
 
     //使用計算出來的總寬度和最大高度加上邊框厚度來計算驗證碼圖形的完整寬高
     $base_w=$dst_w+($border*2);
@@ -256,8 +144,7 @@ function captcha($str){
         $y=rand($info['height']+5,$info['height']+($border*2-5*2));
 
         //將字元依照大小，角度，坐標，顏色，字型等資訊畫在畫布上
-        imagettftext($dst_img,$fontsize,$info['angle'],$x_pointer,$y,$colors[rand(0,count($colors)-1)],realpath('../fonts/arial.ttf'),$char);
-        // imagettftext($dst_img,$fontsize,$info['angle'],$x_pointer,$y,$colors[rand(0,count($colors)-1)],realpath('./fonts/arial.ttf'),$char);
+        imagettftext($dst_img,$fontsize,$info['angle'],$x_pointer,$y,$colors[rand(0,count($colors)-1)],realpath('./fonts/arial.ttf'),$char);
 
         //依照字元的寬度及字元的x坐標來產生下一個字元的x坐標起點
         $x_pointer=$x_pointer+$info['width']+$info['x']+1;
@@ -303,12 +190,8 @@ function captcha($str){
     return "data:image/png;base64," . base64_encode($output);
 
 }
-
-
-$Bottom = new DB('bottom');
-$Mem=new DB('mem');
-$Admin=new DB('admin');
-$Type=new DB('type');
-$Goods=new DB('goods');
-$Order=new DB('orders');
 ?>
+
+<img src="<?=captcha (code(5));?>" alt="" style="border:2px solid green">
+</body>
+</html>
